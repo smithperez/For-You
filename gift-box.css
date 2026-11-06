@@ -41,7 +41,30 @@ button { font: inherit; cursor: pointer; touch-action: manipulation; }
   color: #c4c9bf;
 }
 
-.hud b { color: #ff4c42; text-shadow: 0 0 12px #ff534d9c; }
+.recording-dot {
+  position: relative;
+  display: inline-block;
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: #ff4c42;
+  box-shadow: 0 0 .35rem #ff534d9c;
+}
+
+.recording-dot::after {
+  position: absolute;
+  inset: -.45rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ff534d9c, transparent 68%);
+  opacity: .2;
+  pointer-events: none;
+  animation: recording-pulse 1.8s ease-in-out infinite;
+  content: "";
+}
+
+@keyframes recording-pulse {
+  50% { opacity: .9; }
+}
 .intro, footer { text-align: center; }
 .intro { padding: .65rem 0 .9rem; }
 .intro p { margin: .45rem 0; }
@@ -146,6 +169,8 @@ h1, h2 { margin: .2rem 0; font-size: clamp(1.55rem, 7vw, 2.75rem); line-height: 
   --half-depth: calc(var(--depth) / 2);
   --half-width: calc(var(--width) / 2);
   --wall: clamp(5px, 2vw, 9px);
+  --satin: linear-gradient(90deg, #5c152b, #ad3f5b 19%, #e597a9 40%, #bd4769 58%, #7a223d 83%, #531127);
+  --satin-across: linear-gradient(#5c152b, #ad3f5b 19%, #e597a9 40%, #bd4769 58%, #7a223d 83%, #531127);
   --lid-thickness: clamp(6px, 2.5vw, 12px);
   --floor: calc(var(--half-height) - var(--wall));
   --well-width: calc(var(--width) - 2 * var(--wall));
@@ -467,8 +492,7 @@ h1, h2 { margin: .2rem 0; font-size: clamp(1.55rem, 7vw, 2.75rem); line-height: 
 .outside {
   transform: translateZ(var(--lid-thickness));
   background:
-    linear-gradient(90deg, #2413191f, #180e14db 68%),
-    url("assets/pirate-cove.jpg") 49% 29% / 300% auto,
+    url("assets/foxy-heart.jpg") 50% 39% / cover,
     #542b2a;
 }
 
@@ -509,29 +533,103 @@ h1, h2 { margin: .2rem 0; font-size: clamp(1.55rem, 7vw, 2.75rem); line-height: 
 
 .lid-edge-right { left: 100%; }
 
-.ribbon, .bow { position: absolute; }
-.ribbon { inset: 0 auto 0 20%; width: 12%; background: linear-gradient(90deg, #450e22, #9f324c, #460d1f); }
-.ribbon::after {
-  content: "";
+.ribbon, .bow, .bow-loop, .bow-loop i, .bow-tail, .bow-tail i, .bow-knot {
   position: absolute;
-  left: -167%;
-  top: 26%;
-  width: 833%;
-  height: 13%;
-  background: linear-gradient(#5d142a, #a93950, #440f24);
 }
 
-.bow { left: 26%; top: 32%; width: 14%; height: 16%; transform: translate(-50%, -50%); }
-.bow::before, .bow::after {
-  content: "";
-  position: absolute;
-  width: 115%;
-  height: 100%;
-  border-radius: 65% 40%;
-  background: radial-gradient(at top, #c34c65, #550e26);
+.ribbon {
+  box-shadow: inset 0 0 0 1px #f3a5b136, 0 1px 2px #16070b9c;
 }
-.bow::before { right: 48%; transform: rotate(-17deg); }
-.bow::after { left: 48%; transform: rotate(17deg); }
+
+.ribbon-length {
+  inset: 0 auto 0 19%;
+  width: 11%;
+  background: var(--satin);
+}
+
+.ribbon-cross {
+  inset: 39% 0 auto;
+  height: 10%;
+  background: var(--satin-across);
+}
+
+.face::after, .lid-edge::after {
+  position: absolute;
+  inset: 0 auto 0 19%;
+  width: 11%;
+  background: var(--satin);
+  opacity: .86;
+  pointer-events: none;
+  content: "";
+}
+
+.face::after { transform: translateZ(1px); }
+.back::after { left: 70%; }
+.left::after { left: 39%; width: 10%; }
+.right::after { left: 51%; width: 10%; }
+.lid-edge-left::after, .lid-edge-right::after {
+  inset: 39% 0 auto;
+  width: 100%;
+  height: 10%;
+  background: var(--satin-across);
+}
+
+.bow {
+  --unit: clamp(.65px, .23vw, 1px);
+  left: 24.5%;
+  top: 44%;
+  width: 0;
+  height: 0;
+  transform: translateZ(calc(var(--lid-thickness) + 1px)) rotateZ(-10deg);
+  transform-style: preserve-3d;
+}
+
+.bow-loop, .bow-tail { transform-style: preserve-3d; }
+.bow-loop-left { transform: scaleX(-1) rotateX(12deg) rotateZ(-8deg); }
+
+.bow-loop i {
+  left: calc(var(--x) * var(--unit));
+  top: 0;
+  width: calc(var(--length) * var(--unit));
+  height: calc(var(--strip) * var(--unit));
+  transform-origin: left center;
+  transform: translateY(-50%) translateZ(calc(var(--z) * var(--unit))) rotateY(var(--fold));
+  background: var(--satin-across);
+  border-block: 1px solid #f5acba50;
+}
+
+.bow-tail {
+  width: calc(14 * var(--unit));
+  height: calc(19 * var(--unit));
+  transform-origin: top center;
+  background: var(--satin);
+}
+
+.bow-tail-left {
+  transform: translateX(-50%) translateZ(4px) rotateZ(24deg) rotateX(8deg);
+}
+
+.bow-tail-right {
+  transform: translateX(-50%) translateZ(5px) rotateZ(-24deg) rotateX(-13deg);
+}
+
+.bow-tail i {
+  inset: 100% 0 auto;
+  height: calc(17 * var(--unit));
+  transform: rotateX(-17deg);
+  transform-origin: top;
+  background: var(--satin);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 73%, 0 100%);
+}
+
+.bow-knot {
+  width: calc(17 * var(--unit));
+  height: calc(20 * var(--unit));
+  border-radius: 38%;
+  transform: translate(-50%, -50%) translateZ(calc(12 * var(--unit)));
+  background: radial-gradient(at 44% 27%, #f7acbb, #b44868 48%, #641e36 85%);
+  box-shadow: inset 1px 0 #f7adba72;
+}
 
 .label {
   position: absolute;
@@ -544,10 +642,68 @@ h1, h2 { margin: .2rem 0; font-size: clamp(1.55rem, 7vw, 2.75rem); line-height: 
 }
 
 .label strong { font-size: 1.22em; }
-.controls { display: grid; gap: .55rem; text-align: center; }
-.hint { margin: .65rem 0 0; }
+.hint { margin: .65rem 0 0; text-align: center; }
 
-.primary, .message-button {
+.scene:focus-visible {
+  outline: 2px solid #d3ed90;
+  outline-offset: -4px;
+  border-radius: .5rem;
+}
+
+.transmission {
+  margin: 1.2rem 0 0;
+  padding: .8rem .95rem .5rem;
+  border: 1px solid #6b745b;
+  border-radius: .7rem;
+  background: linear-gradient(150deg, #2b3027, #181a20 68%);
+  text-align: center;
+}
+
+.transmission-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .3rem .55rem;
+  margin: 0;
+  padding-bottom: .45rem;
+  border-bottom: 1px solid #a9c06d3b;
+  color: #c1d2a8;
+  font-size: .85rem;
+}
+
+.transmission-status span:last-child { color: #e5a0af; }
+.transmission h2 { margin-top: .65rem; font-size: clamp(1.4rem, 7vw, 2rem); }
+
+.transmission-messages {
+  display: grid;
+  place-items: center;
+  min-height: 3.8rem;
+}
+
+.transmission-messages p {
+  margin: .25rem 0;
+  font-size: 1.14rem;
+  line-height: 1.15;
+  animation: transmission-in 260ms ease-out both;
+}
+
+#tune-button {
+  min-height: 2.75rem;
+  padding: .3rem .65rem;
+  border: 0;
+  border-radius: .35rem;
+  background: transparent;
+  color: #d1e995;
+}
+
+#tune-button:active { background: #a9c06d24; }
+
+@keyframes transmission-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.primary {
   width: 100%;
   min-height: 3rem;
   padding: .55rem .7rem;
@@ -558,16 +714,23 @@ h1, h2 { margin: .2rem 0; font-size: clamp(1.55rem, 7vw, 2.75rem); line-height: 
   color: #eff2e5;
 }
 
-.message-button { font-weight: 700; }
-
-.primary:active, .message-button:active, .carousel-controls button:active {
+.primary:active, .carousel-controls button:active {
   filter: brightness(1.22);
   transform: scale(.985);
 }
 
-#lid-button[aria-expanded="true"] { background: #25262a; }
 button:focus-visible, a:focus-visible { outline: 2px solid #d3ed90; outline-offset: 2px; }
 footer p { margin: .8rem 0 .35rem; font-size: .8rem; }
+footer .signature {
+  display: inline-block;
+  margin: .4rem 0 .2rem;
+  padding: .25rem .65rem;
+  border: 1px solid #6b745b;
+  border-radius: .35rem;
+  background: #20241d;
+  color: #d1e995;
+  font-size: 1rem;
+}
 .credits, .credits a { font-size: .68rem; color: #acaaa9; }
 
 dialog {
@@ -686,9 +849,9 @@ dialog::backdrop { background: #080509d9; }
 
 @media (prefers-reduced-motion: reduce) {
   .lid, .scene.is-open .lid, .padlock, .scene.is-open .padlock,
-  .shackle, .scene.is-open .shackle, .monitor, .primary, .message-button { transition: none; }
+  .shackle, .scene.is-open .shackle, .monitor, .primary { transition: none; }
   .camera-sweep, .monitor:has(.scene.is-open) .camera-sweep,
-  dialog[open], .reasons li, .monitor,
+  dialog[open], .reasons li, .transmission-messages p, .monitor, .recording-dot::after,
   .scene.is-open .seal, .monitor:has(.scene.is-open) .signal { animation: none; }
-  .primary:active, .message-button:active, .carousel-controls button:active { transform: none; }
+  .primary:active, .carousel-controls button:active { transform: none; }
 }

@@ -1,28 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0c0b0d">
-  <title>For You · Pirate Cove</title>
+  <title>Para ti, Dennis · Cala Pirata</title>
   <link rel="stylesheet" href="gift-box.css">
   <script src="gift-box.js" defer></script>
 </head>
 <body>
   <main class="cove">
-    <header class="hud"><span><b>●</b> REC / CAM 1C</span><span>4 AM · NIGHT 01</span></header>
+    <header class="hud">
+      <span><span class="recording-dot" aria-hidden="true"></span> GRAB. / CÁM. 1C</span>
+      <span><span role="img" aria-label="Londres">🇬🇧</span> <time id="london-time">—</time> · <span id="night-count">NOCHE —</span></span>
+    </header>
     <section class="intro">
-      <p class="eyebrow">Five Nights at Freddy’s / Private delivery</p>
-      <h1>For you, my love.</h1>
-      <p>Foxy left something behind the curtain.</p>
+      <p class="eyebrow">Five Nights at Freddy’s / Entrega privada</p>
+      <h1>Para ti, Dennis. ♥</h1>
+      <p>Foxy dejó algo para ti detrás del telón.</p>
     </section>
 
-    <section class="monitor" aria-label="Pirate Cove security camera">
+    <section class="monitor" aria-label="Cámara de seguridad de la Cala Pirata">
       <div class="feed" aria-hidden="true"></div>
       <div class="camera-sweep" aria-hidden="true"></div>
       <div class="viewfinder" aria-hidden="true"></div>
-      <div class="camera-tag">CAM 1C<br>PIRATE COVE</div>
-      <div class="scene" id="scene">
+      <div class="camera-tag">CÁM. 1C<br>CALA PIRATA</div>
+      <div class="scene" id="scene" role="button" tabindex="0"
+        aria-label="Abrir la caja del regalo" aria-expanded="false" aria-describedby="gift-hint">
         <div class="box" aria-hidden="true">
           <div class="face front">
             <span>FAZBEAR ENT.</span>
@@ -42,7 +46,7 @@
           <div class="face back"></div>
           <div class="face left"></div>
           <div class="face right"></div>
-          <div class="face bottom"><span>PROPERTY OF PIRATE COVE</span></div>
+          <div class="face bottom"><span>PROPIEDAD DE LA CALA PIRATA</span></div>
           <div class="inner inner-front"></div>
           <div class="inner inner-back"></div>
           <div class="inner inner-left"></div>
@@ -63,7 +67,38 @@
           </div>
           <div class="hinge">
             <div class="lid">
-              <div class="lid-face outside"><span class="ribbon"></span><span class="bow"></span><span class="label">PARA MI<br><strong>PRINCESA</strong></span></div>
+              <div class="lid-face outside">
+                <span class="ribbon ribbon-length"></span>
+                <span class="ribbon ribbon-cross"></span>
+                <span class="label">PARA MI<br><strong>PRINCESA</strong></span>
+              </div>
+              <div class="bow" aria-hidden="true">
+                <span class="bow-tail bow-tail-left"><i></i></span>
+                <span class="bow-tail bow-tail-right"><i></i></span>
+                  <span class="bow-loop">
+                    <i style="--x:0;--z:3;--length:10.25;--fold:-36.9deg;--strip:10.5"></i>
+                    <i style="--x:8;--z:9;--length:10.55;--fold:-29.1deg;--strip:16.5"></i>
+                    <i style="--x:17;--z:14;--length:10.30;--fold:-5.7deg;--strip:22"></i>
+                    <i style="--x:27;--z:15;--length:8.79;--fold:20.6deg;--strip:23.5"></i>
+                    <i style="--x:35;--z:12;--length:6.08;--fold:59.0deg;--strip:22"></i>
+                    <i style="--x:38;--z:7;--length:6.08;--fold:121.0deg;--strip:19.5"></i>
+                    <i style="--x:35;--z:2;--length:10.30;--fold:174.3deg;--strip:16.5"></i>
+                    <i style="--x:25;--z:1;--length:12.25;--fold:-180.0deg;--strip:13"></i>
+                    <i style="--x:13;--z:1;--length:13.40;--fold:-171.3deg;--strip:9.5"></i>
+                  </span>
+                  <span class="bow-loop bow-loop-left">
+                    <i style="--x:0;--z:3;--length:10.25;--fold:-36.9deg;--strip:10.5"></i>
+                    <i style="--x:8;--z:9;--length:10.55;--fold:-29.1deg;--strip:16.5"></i>
+                    <i style="--x:17;--z:14;--length:10.30;--fold:-5.7deg;--strip:22"></i>
+                    <i style="--x:27;--z:15;--length:8.79;--fold:20.6deg;--strip:23.5"></i>
+                    <i style="--x:35;--z:12;--length:6.08;--fold:59.0deg;--strip:22"></i>
+                    <i style="--x:38;--z:7;--length:6.08;--fold:121.0deg;--strip:19.5"></i>
+                    <i style="--x:35;--z:2;--length:10.30;--fold:174.3deg;--strip:16.5"></i>
+                    <i style="--x:25;--z:1;--length:12.25;--fold:-180.0deg;--strip:13"></i>
+                    <i style="--x:13;--z:1;--length:13.40;--fold:-171.3deg;--strip:9.5"></i>
+                  </span>
+                <span class="bow-knot"></span>
+              </div>
               <div class="lid-face inside"><span>Para mi Princesa</span></div>
               <div class="lid-edge lid-edge-top"></div>
               <div class="lid-edge lid-edge-bottom"></div>
@@ -73,20 +108,38 @@
           </div>
         </div>
       </div>
-      <span class="signal" id="signal">SIGNAL ▂ ▄ ▆</span>
+      <span class="signal" id="signal">SEÑAL ▂ ▄ ▆</span>
     </section>
 
-    <div class="controls">
-      <p class="hint">Drag to rotate · Tap the box to open</p>
-      <div id="message-controls" hidden>
-        <button class="message-button" id="message-button" type="button" aria-haspopup="dialog">♥ &nbsp; Leer mis 5 razones</button>
+    <p class="hint" id="gift-hint">Arrastra para girar · Toca la caja para abrirla</p>
+
+    <section class="transmission" lang="es" aria-labelledby="transmission-title">
+      <p class="transmission-status"><span>CANAL PRIVADO / 06:00</span><span>♥ EN LÍNEA</span></p>
+      <h2 id="transmission-title">Para Dennis</h2>
+      <div class="transmission-messages" aria-live="polite">
+        <p>Si la noche termina a las 6, ¿por qué sigo pensando en ti a las 6:01?</p>
+        <p hidden>Dennis, ni con todas las cámaras de Freddy’s podría dejar de mirarte.</p>
+        <p hidden>Si me quedara un 1 % de batería, lo gastaría en decirte que te quiero.</p>
+        <p hidden>Foxy tiene un garfio, pero aquí la única que me tiene el corazón enganchado eres tú.</p>
+        <p hidden>Dennis, si esto fuera una partida, guardaría justo en el momento en que me abrazas.</p>
+        <p hidden>Podrán cortar la luz de toda la pizzería, pero se me seguirá iluminando la cara al verte.</p>
+        <p hidden>Si oyes latidos por el intercomunicador, soy yo cada vez que dices mi nombre.</p>
+        <p hidden>Me inventaría una sexta noche solo para tener una excusa para quedarme contigo.</p>
+        <p hidden>Mi susto favorito es ver tu nombre en el móvil y darme cuenta de que ya estoy sonriendo.</p>
+        <p hidden>Dennis, si mi corazón tuviera un mapa de cámaras, todas apuntarían hacia ti.</p>
+        <p hidden>Dejaría que Foxy se quedara con mi porción de pizza si eso me consigue otro beso tuyo.</p>
+        <p hidden>Si el turno acaba al amanecer, ¿me dejas quedarme cinco minutitos más contigo?</p>
+        <p hidden>Hasta el zumbido del ventilador de la oficina me sonaría a canción de amor si estuvieras aquí.</p>
+        <p hidden>Te guardaría el último corazón de la máquina de premios, aunque ya tengas el mío.</p>
+        <p hidden>Si algún día se pierde la señal, búscame en el canal que dice «Dennis, te quiero».</p>
       </div>
-      <button class="primary" id="lid-button" type="button" aria-expanded="false" aria-controls="message-controls">Open the gift</button>
-    </div>
+      <button type="button" id="tune-button"><span aria-hidden="true">↻</span> Sintonizar otro mensaje</button>
+    </section>
 
     <footer>
-      <p>I’d spend all five nights with you. ♥</p>
-      <p class="credits">Pirate Cove screenshot via <a href="https://cliqist.com/2014/09/21/the-ultimate-five-nights-at-freddys-guide/">Cliqist</a> · Foxy film still via <a href="https://www.slashfilm.com/1438575/five-nights-at-freddys-second-weekend-box-office-drop/">/Film</a></p>
+      <p>Pasaría las cinco noches contigo. ♥</p>
+      <p class="signature" lang="en">Made with ❤️ by Smith</p>
+      <p class="credits">Captura de la Cala Pirata en <a href="https://cliqist.com/2014/09/21/the-ultimate-five-nights-at-freddys-guide/">Cliqist</a> · Fotograma de Foxy en <a href="https://www.slashfilm.com/1438575/five-nights-at-freddys-second-weekend-box-office-drop/">/Film</a></p>
     </footer>
   </main>
 
@@ -95,20 +148,21 @@
     <h2 id="message-title">5 razones por las que me gustas</h2>
     <ol class="reasons" aria-live="polite">
       <li class="timer-card">
-        <p class="timer-date">Desde el <time datetime="2026-08-10">10 de agosto de 2026</time></p>
+        <p class="timer-date">Desde el <time id="timer-start" datetime="2026-08-10T00:00:00+01:00">10 de agosto de 2026</time><br>
+          Medianoche en Londres 🇬🇧</p>
         <div class="timer" role="timer" aria-label="Tiempo desde el 10 de agosto de 2026" aria-live="off">
-          <span><strong data-time="days">00</strong><small lang="en">Days</small></span>
-          <span><strong data-time="hours">00</strong><small lang="en">Hours</small></span>
-          <span><strong data-time="minutes">00</strong><small lang="en">Minutes</small></span>
-          <span><strong data-time="seconds">00</strong><small lang="en">Seconds</small></span>
+          <span><strong data-time="days">00</strong><small>Días</small></span>
+          <span><strong data-time="hours">00</strong><small>Horas</small></span>
+          <span><strong data-time="minutes">00</strong><small>Minutos</small></span>
+          <span><strong data-time="seconds">00</strong><small>Segundos</small></span>
         </div>
-        <p class="timer-caption">Este reloj cuenta el tiempo desde que empezó lo nuestro. Y aun así, mi momento favorito sigue siendo el próximo segundo contigo.</p>
+        <p class="timer-caption">Este reloj cuenta el tiempo desde que empezamos a hablar. Y aun así, mi momento favorito sigue siendo el próximo segundo contigo.</p>
       </li>
-      <li hidden>Tu sonrisa me alegra el día.</li>
-      <li hidden>Me encanta cómo me haces reír.</li>
-      <li hidden>Contigo puedo ser yo.</li>
-      <li hidden>Hasta los planes más simples son especiales contigo.</li>
-      <li hidden>Cuando me pasa algo bonito, eres la primera persona a la que quiero contárselo.</li>
+      <li hidden>Porque cuando sonríes, hasta Freddy se olvida de dar miedo.</li>
+      <li hidden>Porque tu risa es el único sonido que quiero oír cuando se apagan las luces.</li>
+      <li hidden>Porque contigo hasta la oficina de seguridad se siente como casa.</li>
+      <li hidden>Porque hasta compartir contigo la última porción de pizza me parece una cita perfecta.</li>
+      <li hidden>Porque si te viera en la cámara 1C, dejaría el monitor fijo ahí toda la noche.</li>
     </ol>
     <div class="carousel-controls" role="group" aria-label="Controles de las razones">
       <button type="button" id="previous-reason" aria-label="Tarjeta anterior">←</button>

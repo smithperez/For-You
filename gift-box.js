@@ -1,9 +1,6 @@
 const scene = document.querySelector('#scene');
 const box = scene.querySelector('.box');
 const note = box.querySelector('.note-front');
-const lidButton = document.querySelector('#lid-button');
-const messageControls = document.querySelector('#message-controls');
-const messageButton = document.querySelector('#message-button');
 const message = document.querySelector('#message');
 const hint = document.querySelector('.hint');
 const signal = document.querySelector('#signal');
@@ -12,7 +9,42 @@ const cards = [...reasons.children];
 const reasonCount = message.querySelector('#reason-count');
 const reasonProgress = message.querySelector('.reason-progress');
 const timerFields = [...message.querySelectorAll('[data-time]')];
-const timerStart = Date.parse('2026-08-10T00:00:00+01:00');
+const timerStart = Date.parse(message.querySelector('#timer-start').dateTime);
+
+const londonTime = document.querySelector('#london-time');
+const nightCount = document.querySelector('#night-count');
+const londonZone = 'Europe/London';
+const timeInLondon = new Intl.DateTimeFormat('es-ES', {
+  timeZone: londonZone,
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+const dateInLondon = new Intl.DateTimeFormat('en-GB', {
+  timeZone: londonZone,
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+});
+
+function londonCalendarDay(date) {
+  const parts = Object.fromEntries(dateInLondon.formatToParts(date).map(({ type, value }) => [type, value]));
+  return Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)) / 86400000;
+}
+
+const firstNight = londonCalendarDay(timerStart);
+
+function updateCameraClock() {
+  const now = new Date();
+  const night = Math.max(0, londonCalendarDay(now) - firstNight + 1);
+
+  londonTime.textContent = timeInLondon.format(now);
+  londonTime.dateTime = now.toISOString();
+  nightCount.textContent = `NOCHE ${String(night).padStart(2, '0')}`;
+  setTimeout(updateCameraClock, 60000 - now.getTime() % 60000);
+}
+
+updateCameraClock();
 
 let currentReason = 0;
 let timerInterval;
@@ -29,16 +61,17 @@ function updateRotation() {
 
 function toggleLid() {
   const isOpen = scene.classList.toggle('is-open');
-  lidButton.setAttribute('aria-expanded', String(isOpen));
-  lidButton.textContent = isOpen ? 'Close the gift' : 'Open the gift';
-  messageControls.hidden = !isOpen;
-  signal.textContent = isOpen ? 'CASE OPEN ▂ ▄ ▆' : 'SIGNAL ▂ ▄ ▆';
+  scene.setAttribute('aria-expanded', String(isOpen));
+  scene.setAttribute('aria-label', isOpen ? 'Leer la nota dentro de la caja' : 'Abrir la caja del regalo');
+  if (isOpen) scene.setAttribute('aria-haspopup', 'dialog');
+  else scene.removeAttribute('aria-haspopup');
+  signal.textContent = isOpen ? 'CAJA ABIERTA ▂ ▄ ▆' : 'SEÑAL ▂ ▄ ▆';
   if (isOpen) {
     pitch = -31;
     yaw = -20;
     updateRotation();
   }
-  hint.textContent = isOpen ? 'Tap inside the box to read the note · Tap the frame or lid to close' : 'Drag to rotate · Tap the box to open';
+  hint.textContent = isOpen ? 'Toca el interior para leer la nota · Toca el borde o la tapa para cerrar' : 'Arrastra para girar · Toca la caja para abrirla';
 }
 
 function isNoteTap(event) {
@@ -102,7 +135,7 @@ scene.addEventListener('pointerup', (event) => {
   if (drag.moved || distance >= drag.threshold) return;
 
   if (drag.onNoteArea && scene.classList.contains('is-open')) {
-    messageButton.focus({ preventScroll: true });
+    scene.focus({ preventScroll: true });
     openReasons();
   } else if (drag.onBox) {
     toggleLid();
@@ -116,8 +149,33 @@ scene.addEventListener('lostpointercapture', (event) => {
   scene.classList.remove('is-dragging');
 });
 
-lidButton.addEventListener('click', toggleLid);
-messageButton.addEventListener('click', openReasons);
+function activateGift() {
+  if (scene.classList.contains('is-open')) openReasons();
+  else toggleLid();
+}
+
+scene.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && scene.classList.contains('is-open')) {
+    event.preventDefault();
+    toggleLid();
+  } else if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    if (!event.repeat) activateGift();
+  }
+});
+
+scene.addEventListener('click', (event) => {
+  if (event.detail === 0) activateGift();
+});
+
+const transmissions = [...document.querySelectorAll('.transmission-messages p')];
+let transmissionIndex = 0;
+
+document.querySelector('#tune-button').addEventListener('click', () => {
+  transmissions[transmissionIndex].hidden = true;
+  transmissionIndex = (transmissionIndex + 1) % transmissions.length;
+  transmissions[transmissionIndex].hidden = false;
+});
 
 function showReason(index) {
   reasons.style.setProperty('--card-offset', index < currentReason ? '-12px' : '12px');
