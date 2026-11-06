@@ -10,21 +10,23 @@
 </head>
 <body>
   <main class="cove">
-    <header class="hud">
-      <span><span class="recording-dot" aria-hidden="true"></span> GRAB. / CÁM. 1C</span>
-      <span><span role="img" aria-label="Londres">🇬🇧</span> <time id="london-time">—</time> · <span id="night-count">NOCHE —</span></span>
-    </header>
-    <section class="intro">
-      <p class="eyebrow">Five Nights at Freddy’s / Entrega privada</p>
-      <h1>Para ti, Dennis. ♥</h1>
+    <header class="intro">
+      <p class="eyebrow">Fazbear Entertainment <span>·</span> Entrega privada</p>
+      <h1>Para ti, Dennis. <span>♥</span></h1>
       <p>Foxy dejó algo para ti detrás del telón.</p>
-    </section>
+    </header>
 
     <section class="monitor" aria-label="Cámara de seguridad de la Cala Pirata">
       <div class="feed" aria-hidden="true"></div>
       <div class="camera-sweep" aria-hidden="true"></div>
       <div class="viewfinder" aria-hidden="true"></div>
-      <div class="camera-tag">CÁM. 1C<br>CALA PIRATA</div>
+      <div class="hud">
+        <span class="recording"><span class="recording-dot" aria-hidden="true"></span> GRAB.</span>
+        <div class="camera-clock">
+          <span class="london-clock"><span role="img" aria-label="Londres">🇬🇧</span> <time id="london-time">—</time></span>
+          <span id="night-count">NOCHE —</span>
+        </div>
+      </div>
       <div class="scene" id="scene" role="button" tabindex="0"
         aria-label="Abrir la caja del regalo" aria-expanded="false" aria-describedby="gift-hint">
         <div class="box" aria-hidden="true">
@@ -99,7 +101,7 @@
                   </span>
                 <span class="bow-knot"></span>
               </div>
-              <div class="lid-face inside"><span>Para mi Princesa</span></div>
+              <div class="lid-face inside"><span>Para mi princesa</span></div>
               <div class="lid-edge lid-edge-top"></div>
               <div class="lid-edge lid-edge-bottom"></div>
               <div class="lid-edge lid-edge-left"></div>
@@ -108,13 +110,28 @@
           </div>
         </div>
       </div>
-      <span class="signal" id="signal">SEÑAL ▂ ▄ ▆</span>
+      <div class="camera-console">
+        <div class="camera-status">
+          <p class="camera-tag">Cala Pirata</p>
+          <p class="usage"><span id="signal">SEÑAL</span><span class="usage-bars" aria-hidden="true"><i></i><i></i><i></i></span></p>
+        </div>
+        <div class="camera-map">
+          <svg viewBox="0 0 146 72" aria-hidden="true" focusable="false">
+            <path d="M35 17h36V6h41v22h24v27h-31v13H76V47H49v14H14V40h21z M71 17v30 M105 28v27 M49 47V31h22 M112 16h16v12"/>
+            <rect x="83" y="10" width="19" height="12"/><rect x="112" y="34" width="17" height="12"/>
+            <rect x="80" y="52" width="19" height="12"/><rect x="18" y="44" width="19" height="12"/>
+            <text x="92.5" y="19">1A</text><text x="120.5" y="43">7</text>
+            <text x="89.5" y="61">2B</text><text x="27.5" y="53">5</text>
+          </svg>
+          <button id="camera-reset" type="button" aria-label="Cámara 1C: centrar la caja" title="Centrar la caja">CÁM.<br>1C</button>
+        </div>
+      </div>
     </section>
 
-    <p class="hint" id="gift-hint">Arrastra para girar · Toca la caja para abrirla</p>
+    <p class="hint" id="gift-hint">Toca la caja para abrirla. Arrastra para girarla.</p>
 
     <section class="transmission" lang="es" aria-labelledby="transmission-title">
-      <p class="transmission-status"><span>CANAL PRIVADO / 06:00</span><span>♥ EN LÍNEA</span></p>
+      <p class="transmission-status"><span>CANAL PRIVADO / 06:00</span><span id="transmission-count">01 / 15</span></p>
       <h2 id="transmission-title">Para Dennis</h2>
       <div class="transmission-messages" aria-live="polite">
         <p>Si la noche termina a las 6, ¿por qué sigo pensando en ti a las 6:01?</p>
@@ -133,7 +150,7 @@
         <p hidden>Te guardaría el último corazón de la máquina de premios, aunque ya tengas el mío.</p>
         <p hidden>Si algún día se pierde la señal, búscame en el canal que dice «Dennis, te quiero».</p>
       </div>
-      <button type="button" id="tune-button"><span aria-hidden="true">↻</span> Sintonizar otro mensaje</button>
+      <button type="button" id="tune-button"><span aria-hidden="true">&gt;&gt;</span> Sintonizar otro mensaje</button>
     </section>
 
     <footer>
@@ -144,7 +161,7 @@
   </main>
 
   <dialog id="message" lang="es" aria-labelledby="message-title">
-    <p class="eyebrow">Un mensaje para ti ♥</p>
+    <p class="eyebrow"><span aria-hidden="true">■</span> ARCHIVO PRIVADO / DENNIS</p>
     <h2 id="message-title">5 razones por las que me gustas</h2>
     <ol class="reasons" aria-live="polite">
       <li class="timer-card">

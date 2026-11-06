@@ -1,4 +1,8 @@
 const scene = document.querySelector('#scene');
+const monitor = scene.closest('.monitor');
+const viewfinder = monitor.querySelector('.viewfinder');
+const cameraReset = monitor.querySelector('#camera-reset');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const box = scene.querySelector('.box');
 const note = box.querySelector('.note-front');
 const message = document.querySelector('#message');
@@ -10,6 +14,7 @@ const reasonCount = message.querySelector('#reason-count');
 const reasonProgress = message.querySelector('.reason-progress');
 const timerFields = [...message.querySelectorAll('[data-time]')];
 const timerStart = Date.parse(message.querySelector('#timer-start').dateTime);
+const secondsPerDay = 86400;
 
 const londonTime = document.querySelector('#london-time');
 const nightCount = document.querySelector('#night-count');
@@ -20,38 +25,36 @@ const timeInLondon = new Intl.DateTimeFormat('es-ES', {
   minute: '2-digit',
   hour12: true,
 });
-const dateInLondon = new Intl.DateTimeFormat('en-GB', {
-  timeZone: londonZone,
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-});
 
-function londonCalendarDay(date) {
-  const parts = Object.fromEntries(dateInLondon.formatToParts(date).map(({ type, value }) => [type, value]));
-  return Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)) / 86400000;
+function elapsedSeconds(timestamp) {
+  return Math.max(0, Math.floor((timestamp - timerStart) / 1000));
 }
 
-const firstNight = londonCalendarDay(timerStart);
+let clockTimeout;
 
 function updateCameraClock() {
+  clearTimeout(clockTimeout);
+  if (document.hidden) return;
+
   const now = new Date();
-  const night = Math.max(0, londonCalendarDay(now) - firstNight + 1);
+  const night = Math.floor(elapsedSeconds(now.getTime()) / secondsPerDay);
 
   londonTime.textContent = timeInLondon.format(now);
   londonTime.dateTime = now.toISOString();
   nightCount.textContent = `NOCHE ${String(night).padStart(2, '0')}`;
-  setTimeout(updateCameraClock, 60000 - now.getTime() % 60000);
+  clockTimeout = setTimeout(updateCameraClock, 60000 - now.getTime() % 60000);
 }
 
 updateCameraClock();
 
 let currentReason = 0;
-let timerInterval;
+let timerTimeout;
 let swipeStart = null;
 
-let pitch = -31;
-let yaw = -20;
+const initialPitch = -31;
+const initialYaw = -20;
+let pitch = initialPitch;
+let yaw = initialYaw;
 let drag = null;
 let rotationFrame = null;
 
@@ -59,19 +62,40 @@ function updateRotation() {
   box.style.transform = `rotateX(${pitch}deg) rotateY(${yaw}deg)`;
 }
 
+function resetRotation() {
+  if (rotationFrame !== null) {
+    cancelAnimationFrame(rotationFrame);
+    rotationFrame = null;
+  }
+
+  pitch = initialPitch;
+  yaw = initialYaw;
+  updateRotation();
+}
+
+cameraReset.addEventListener('click', () => {
+  if (drag) return;
+
+  resetRotation();
+  if (!reducedMotion.matches) monitor.classList.add('is-reacquiring');
+});
+
+viewfinder.addEventListener('animationend', (event) => {
+  if (event.animationName === 'camera-reacquire') monitor.classList.remove('is-reacquiring');
+});
+
 function toggleLid() {
+  monitor.classList.remove('is-reacquiring');
   const isOpen = scene.classList.toggle('is-open');
   scene.setAttribute('aria-expanded', String(isOpen));
   scene.setAttribute('aria-label', isOpen ? 'Leer la nota dentro de la caja' : 'Abrir la caja del regalo');
   if (isOpen) scene.setAttribute('aria-haspopup', 'dialog');
   else scene.removeAttribute('aria-haspopup');
-  signal.textContent = isOpen ? 'CAJA ABIERTA ▂ ▄ ▆' : 'SEÑAL ▂ ▄ ▆';
-  if (isOpen) {
-    pitch = -31;
-    yaw = -20;
-    updateRotation();
-  }
-  hint.textContent = isOpen ? 'Toca el interior para leer la nota · Toca el borde o la tapa para cerrar' : 'Arrastra para girar · Toca la caja para abrirla';
+  signal.textContent = isOpen ? 'CAJA ABIERTA' : 'SEÑAL';
+  if (isOpen) resetRotation();
+  hint.textContent = isOpen
+    ? 'Toca dentro para leer la nota o el borde para cerrar.'
+    : 'Toca la caja para abrirla. Arrastra para girarla.';
 }
 
 function isNoteTap(event) {
@@ -86,7 +110,11 @@ function isNoteTap(event) {
 }
 
 scene.addEventListener('pointerdown', (event) => {
-  if (drag || event.button !== 0) return;
+  if (drag || !event.isPrimary || event.button !== 0) return;
+
+  const onBox = box.contains(event.target);
+  const onNoteArea = scene.classList.contains('is-open') && isNoteTap(event);
+  if (!onBox && !onNoteArea) return;
 
   drag = {
     id: event.pointerId,
@@ -95,8 +123,8 @@ scene.addEventListener('pointerdown', (event) => {
     pitch,
     yaw,
     moved: false,
-    onBox: box.contains(event.target),
-    onNoteArea: scene.classList.contains('is-open') && isNoteTap(event),
+    onBox,
+    onNoteArea,
     threshold: event.pointerType === 'touch' ? 14 : 8,
   };
   scene.setPointerCapture(event.pointerId);
@@ -104,7 +132,7 @@ scene.addEventListener('pointerdown', (event) => {
 
 // Keep touch gestures that start on the scene from scrolling the page.
 scene.addEventListener('touchmove', (event) => {
-  if (event.cancelable) event.preventDefault();
+  if (drag?.onBox && event.cancelable) event.preventDefault();
 }, { passive: false });
 
 scene.addEventListener('pointermove', (event) => {
@@ -142,12 +170,15 @@ scene.addEventListener('pointerup', (event) => {
   }
 });
 
-scene.addEventListener('lostpointercapture', (event) => {
+function clearDrag(event) {
   if (drag?.id !== event.pointerId) return;
 
   drag = null;
   scene.classList.remove('is-dragging');
-});
+}
+
+scene.addEventListener('lostpointercapture', clearDrag);
+scene.addEventListener('pointercancel', clearDrag);
 
 function activateGift() {
   if (scene.classList.contains('is-open')) openReasons();
@@ -165,16 +196,18 @@ scene.addEventListener('keydown', (event) => {
 });
 
 scene.addEventListener('click', (event) => {
-  if (event.detail === 0) activateGift();
+  if (event.detail === 0 && !event.pointerType) activateGift();
 });
 
 const transmissions = [...document.querySelectorAll('.transmission-messages p')];
+const transmissionCount = document.querySelector('#transmission-count');
 let transmissionIndex = 0;
 
 document.querySelector('#tune-button').addEventListener('click', () => {
   transmissions[transmissionIndex].hidden = true;
   transmissionIndex = (transmissionIndex + 1) % transmissions.length;
   transmissions[transmissionIndex].hidden = false;
+  transmissionCount.textContent = `${String(transmissionIndex + 1).padStart(2, '0')} / ${transmissions.length}`;
 });
 
 function showReason(index) {
@@ -184,42 +217,61 @@ function showReason(index) {
   cards[currentReason].hidden = false;
   reasonProgress.value = currentReason + 1;
   reasonCount.textContent = `${currentReason + 1} de ${cards.length}`;
-  if (currentReason === 0) updateTimer();
+  scheduleTimer();
 }
 
 function updateTimer() {
-  const elapsed = Math.max(0, Math.floor((Date.now() - timerStart) / 1000));
+  const now = Date.now();
+  const elapsed = elapsedSeconds(now);
   const values = {
-    days: Math.floor(elapsed / 86400),
+    days: Math.floor(elapsed / secondsPerDay),
     hours: Math.floor(elapsed / 3600) % 24,
     minutes: Math.floor(elapsed / 60) % 60,
     seconds: elapsed % 60,
   };
 
   for (const field of timerFields) {
-    field.textContent = String(values[field.dataset.time]).padStart(2, '0');
+    const value = String(values[field.dataset.time]).padStart(2, '0');
+    if (field.textContent !== value) field.textContent = value;
   }
+
+  timerTimeout = setTimeout(updateTimer, 1000 - now % 1000);
+}
+
+function scheduleTimer() {
+  clearTimeout(timerTimeout);
+  if (message.open && currentReason === 0 && !document.hidden) updateTimer();
 }
 
 function openReasons() {
-  showReason(0);
+  if (message.open) return;
+
   message.showModal();
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (currentReason === 0) updateTimer();
-  }, 1000);
+  message.scrollTop = 0;
+  showReason(0);
 }
 
 message.addEventListener('close', () => {
-  clearInterval(timerInterval);
+  if (!message.open) clearTimeout(timerTimeout);
+  swipeStart = null;
 });
+
+function refreshClocks() {
+  updateCameraClock();
+  scheduleTimer();
+}
+
+document.addEventListener('visibilitychange', refreshClocks);
+window.addEventListener('pageshow', refreshClocks);
 
 message.querySelector('#previous-reason').addEventListener('click', () => showReason(currentReason - 1));
 message.querySelector('#next-reason').addEventListener('click', () => showReason(currentReason + 1));
 
 message.addEventListener('keydown', (event) => {
-  if (event.key === 'ArrowLeft') showReason(currentReason - 1);
-  if (event.key === 'ArrowRight') showReason(currentReason + 1);
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+
+  event.preventDefault();
+  showReason(currentReason + (event.key === 'ArrowLeft' ? -1 : 1));
 });
 
 reasons.addEventListener('touchstart', (event) => {
