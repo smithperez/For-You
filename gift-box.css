@@ -237,11 +237,11 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
   --half-depth: calc(var(--depth) / 2);
   --half-width: calc(var(--width) / 2);
   --wall: clamp(5px, 2vw, 9px);
-  --satin: linear-gradient(90deg, #602237 0%, #a54b63 14%, #b96b80 30%, #e0a0ad 47%, #b16a7d 60%, #904457 79%, #632335 100%);
-  --satin-across: linear-gradient(#602237 0%, #a54b63 14%, #b96b80 30%, #e0a0ad 47%, #b16a7d 60%, #904457 79%, #632335 100%);
-  --satin-weave: repeating-linear-gradient(0deg, #eac2c00b 0 1px, transparent 1px 2px);
-  --satin-weave-across: repeating-linear-gradient(90deg, #eac2c00b 0 1px, transparent 1px 2px);
   --lid-thickness: clamp(6px, 2.5vw, 12px);
+  --lock-x: 77%;
+  --staple-y: clamp(10px, 3.6vw, 15px);
+  --staple-depth: clamp(13px, 4.8vw, 21px);
+  --pin-z: calc(var(--staple-depth) * .7);
   --floor: calc(var(--half-height) - var(--wall));
   --well-width: calc(var(--width) - 2 * var(--wall));
   --well-depth: calc(var(--depth) - 2 * var(--wall));
@@ -263,7 +263,7 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
 }
 
 /* Only rendered surfaces receive hits. The invisible 3D wrapper can cover the note. */
-.face, .lining, .inner, .lid-face, .lid-edge, .note, .bow { pointer-events: auto; }
+.face, .lining, .inner, .lid-face, .lid-edge, .clasp, .note { pointer-events: auto; }
 
 .face, .lining, .inner, .rim, .note {
   position: absolute;
@@ -325,18 +325,27 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
 .bottom, .lining { height: var(--depth); }
 .bottom { transform: translate(-50%, -50%) rotateX(-90deg) translateZ(var(--half-height)); }
 
-.hasp {
+.staple {
   position: absolute;
-  top: 0;
-  right: 13%;
-  width: 11%;
-  height: 30%;
-  border: 1px solid #777b74;
-  border-radius: 0 0 3px 3px;
-  background: radial-gradient(circle at 50% 68%, #1b1f20 0 2px, #77796e 3px 4px, transparent 5px),
-    linear-gradient(115deg, #c0b39752, #29272470), var(--rust) 15% 22% / 9rem;
-  transform: translateZ(1px);
+  top: var(--staple-y);
+  left: var(--lock-x);
+  width: var(--staple-depth);
+  height: clamp(8px, 2.9vw, 13px);
+  transform: translate(-50%, -50%) translateZ(calc(var(--staple-depth) / 2)) rotateY(-90deg);
+  transform-style: preserve-3d;
 }
+
+.staple i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #524e44;
+  border-radius: 1px 48% 48% 1px;
+  background: linear-gradient(#a5a291, #5c5b54 55%, #3a3936);
+  mask-image: radial-gradient(ellipse 16% 28% at 70% 50%, transparent 94%, #000);
+}
+
+.staple i:first-child { transform: translateZ(-1px); }
+.staple i:last-child { transform: translateZ(1px); }
 
 .padlock {
   --lock-width: clamp(1.55rem, 8.6vw, 2.6rem);
@@ -344,19 +353,19 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
   --lock-depth: clamp(6px, 2.25vw, 11px);
   --lock-half: calc(var(--lock-depth) / 2);
   position: absolute;
-  top: 12%;
-  right: calc(18.5% - var(--lock-width) / 2);
+  top: calc(var(--staple-y) - 2px);
+  left: var(--lock-x);
   width: var(--lock-width);
   height: calc(var(--lock-height) + var(--lock-width) * .46);
-  transform: translateZ(calc(var(--lock-half) + 4px));
-  transform-origin: 36% 8%;
+  transform: translateX(-50%) translateZ(var(--pin-z));
+  transform-origin: 50% 2px;
   transform-style: preserve-3d;
-  transition: transform 380ms 160ms cubic-bezier(.2, .8, .2, 1);
+  transition: transform 235ms 570ms cubic-bezier(.2, .8, .2, 1);
 }
 
 .scene.is-open .padlock {
-  transform: translateZ(calc(var(--lock-half) + 7px)) rotateY(-34deg) rotateZ(-23deg);
-  transition-delay: 135ms;
+  transform: translateX(-50%) translateZ(calc(var(--pin-z) + 3px)) rotateZ(-19deg) rotateY(-15deg);
+  transition-delay: 60ms;
 }
 
 .shackle {
@@ -367,11 +376,11 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
   height: 58%;
   transform-origin: 15% 85%;
   transform-style: preserve-3d;
-  transition: transform 220ms 360ms ease-in-out;
+  transition: transform 170ms 810ms ease-in-out;
 }
 
 .scene.is-open .shackle {
-  transform: translateY(-28%) rotateY(50deg);
+  transform: translateY(-24%) rotateY(42deg);
   transition-delay: 0ms;
 }
 
@@ -571,12 +580,12 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
   transform-origin: top center;
   transform-style: preserve-3d;
   transform: rotateX(90deg);
-  transition: transform .55s cubic-bezier(.2, .7, .2, 1);
+  transition: transform .48s cubic-bezier(.2, .7, .2, 1);
 }
 
 .scene.is-open .lid {
   transform: rotateX(163deg);
-  transition-delay: 140ms;
+  transition-delay: 300ms;
 }
 
 .lid-face {
@@ -636,102 +645,36 @@ h2 { font-size: clamp(1.8rem, 7vw, 2.75rem); }
 
 .lid-edge-right { left: 100%; }
 
-.ribbon, .bow, .bow-loop, .bow-loop i, .bow-tail, .bow-tail i, .bow-knot {
+.clasp-mount {
   position: absolute;
-}
-
-.ribbon {
-  box-shadow: inset 1px 0 #f3a5b13a, inset -1px 0 #581a2c80, 0 2px 2px #16070b9c;
-}
-
-.ribbon-length {
-  inset: 0 auto 0 19%;
-  width: 11%;
-  background: var(--satin-weave), var(--satin);
-}
-
-.ribbon-cross {
-  inset: 39% 0 auto;
-  height: 10%;
-  background: var(--satin-weave-across), var(--satin-across);
-}
-
-.face::after, .lid-edge::after {
-  position: absolute;
-  inset: 0 auto 0 19%;
-  width: 11%;
-  background: var(--satin-weave), var(--satin);
-  box-shadow: inset 1px 0 #f3a5b131, 1px 0 2px #24101766;
-  pointer-events: none;
-  content: "";
-}
-
-.face::after { transform: translateZ(1px); }
-.back::after { left: 70%; }
-.left::after { left: 39%; width: 10%; }
-.right::after { left: 51%; width: 10%; }
-.lid-edge-left::after, .lid-edge-right::after {
-  inset: 39% 0 auto;
-  width: 100%;
-  height: 10%;
-  background: var(--satin-weave-across), var(--satin-across);
-}
-
-.bow {
-  --unit: clamp(.65px, .24vw, 1.05px);
-  left: 24.5%;
-  top: 44%;
-  width: 0;
+  top: 100%;
+  left: var(--lock-x);
+  width: clamp(15px, 6vw, 25px);
   height: 0;
-  transform: translateZ(calc(var(--lid-thickness) + 1px)) rotateZ(-10deg);
+  transform: translateX(-50%) translateY(2px) translateZ(var(--lid-thickness)) rotateX(-90deg);
+  transform-origin: top center;
   transform-style: preserve-3d;
 }
 
-.bow-loop, .bow-tail { transform-style: preserve-3d; }
-.bow-loop-left { transform: scaleX(-1) rotateX(12deg) rotateZ(-8deg); }
-
-.bow-loop i {
-  left: calc(var(--x) * var(--unit));
-  top: 0;
-  width: calc(var(--length) * var(--unit));
-  height: calc(var(--strip) * var(--unit));
-  transform-origin: left center;
-  transform: translateY(-50%) translateZ(calc(var(--z) * var(--unit))) rotateY(var(--fold));
-  clip-path: polygon(0 var(--start), 100% var(--end), 100% calc(100% - var(--end)), 0 calc(100% - var(--start)));
-  background: linear-gradient(var(--light), var(--light)), var(--satin-weave-across), var(--satin-across);
-}
-
-.bow-tail {
-  width: calc(14 * var(--unit));
-  height: calc(19 * var(--unit));
+.clasp {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(var(--lid-thickness) + var(--staple-y) + 6px);
+  border: 1px solid #6e695c;
+  border-radius: 1px 1px 5px 5px;
+  background:
+    radial-gradient(circle at 25% 3px, #c4b9a2 0 1px, #444238 1.5px, transparent 2.5px),
+    radial-gradient(circle at 75% 3px, #c4b9a2 0 1px, #444238 1.5px, transparent 2.5px),
+    linear-gradient(90deg, #3e3e3b, #aaa496 25%, #74736a 68%, #41413b);
+  box-shadow: inset 0 1px #d5c9ac73, inset 1px 0 #c5bba380;
+  mask-image: radial-gradient(ellipse 4px clamp(5px, 1.65vw, 7px) at 50% calc(var(--lid-thickness) + var(--staple-y)), transparent 94%, #000);
   transform-origin: top center;
-  background: var(--satin-weave), var(--satin);
+  transition: transform 190ms 485ms ease-in-out;
 }
 
-.bow-tail-left {
-  transform: translateX(-50%) translateZ(4px) rotateZ(24deg) rotateX(8deg);
-}
-
-.bow-tail-right {
-  transform: translateX(-50%) translateZ(5px) rotateZ(-24deg) rotateX(-13deg);
-}
-
-.bow-tail i {
-  inset: 100% 0 auto;
-  height: calc(17 * var(--unit));
-  transform: rotateX(-17deg);
-  transform-origin: top;
-  background: var(--satin-weave), var(--satin);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 73%, 0 100%);
-}
-
-.bow-knot {
-  width: calc(17 * var(--unit));
-  height: calc(20 * var(--unit));
-  border-radius: 38%;
-  transform: translate(-50%, -50%) translateZ(calc(12 * var(--unit)));
-  background: var(--satin-weave), radial-gradient(at 43% 29%, #e8a5b0, #ab5870 46%, #631f39 85%);
-  box-shadow: inset 1px 0 #f2b6bc6e, 1px 2px 2px #401326a8;
+.scene.is-open .clasp {
+  transform: rotateX(58deg);
+  transition-delay: 95ms;
 }
 
 .label {
@@ -953,7 +896,7 @@ dialog::backdrop { background: #000d; }
 
 @media (prefers-reduced-motion: reduce) {
   .lid, .scene.is-open .lid, .padlock, .scene.is-open .padlock,
-  .shackle, .scene.is-open .shackle, .box { transition: none; }
+  .shackle, .scene.is-open .shackle, .clasp, .scene.is-open .clasp, .box { transition: none; }
   .camera-sweep, .monitor:has(.scene.is-open) .camera-sweep,
   dialog[open], .reasons li,
   .transmission-messages p, .monitor, .recording-dot::after,
