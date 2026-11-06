@@ -3,54 +3,94 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#160d18">
+  <meta name="theme-color" content="#0c0b0d">
   <title>For You · Pirate Cove</title>
   <link rel="stylesheet" href="gift-box.css">
   <script src="gift-box.js" defer></script>
 </head>
 <body>
   <main class="cove">
-    <header class="camera"><span>CAM 1C / PIRATE COVE</span><span>● REC</span></header>
-
-    <section class="intro" aria-labelledby="title">
-      <p class="caption">Five Nights at Freddy’s</p>
-      <h1 id="title">For you, my love.</h1>
-      <p>A little gift from your favourite night guard.</p>
+    <header class="hud"><span><b>●</b> REC / CAM 1C</span><span>4 AM · NIGHT 01</span></header>
+    <section class="intro">
+      <p class="eyebrow">Five Nights at Freddy’s / Private delivery</p>
+      <h1>For you, my love.</h1>
+      <p>Foxy left something behind the curtain.</p>
     </section>
 
-    <div class="stage">
-      <div class="curtain left" aria-hidden="true"></div>
-      <div class="curtain right" aria-hidden="true"></div>
-      <div class="sign" aria-hidden="true">SORRY!<br>OUT OF ORDER</div>
-      <div class="scene">
-        <div class="gift">
-          <div class="front" aria-hidden="true"></div>
-          <div class="ribbon horizontal" aria-hidden="true"></div>
-          <div class="ribbon vertical" aria-hidden="true"></div>
-          <div class="bow" aria-hidden="true"><span class="tails"></span><span class="knot"></span></div>
-          <div class="decoration">
-            <svg viewBox="0 0 120 112" role="img" aria-label="Foxy the pirate fox with an eyepatch and gold eye">
-              <path d="m22 45-9-30 14-9 23 25 24-2L93 5l15 8-8 36" fill="#b54231" stroke="#31151a" stroke-width="5" stroke-linejoin="round"/>
-              <path d="m22 17 8 23 12-7zm76-1-18 20 13 7z" fill="#ec906d"/>
-              <path d="m23 51 7-14 18-7 3-12 8 8 9-7 4 13 19 6 11 16-6 14 11 6-17 8 3 13-18 12H45L30 95l2-11-18-8 10-8z" fill="#c75139" stroke="#31151a" stroke-width="5" stroke-linejoin="round"/>
-              <path d="m29 46 66 10" stroke="#321b23" stroke-width="7"/>
-              <path d="M32 49q11-7 24 2l-4 17q-14 6-19-4z" fill="#21131b" stroke="#31151a" stroke-width="2"/>
-              <ellipse cx="79" cy="58" rx="12" ry="10" fill="#ffcb6c" stroke="#3f1a21" stroke-width="4"/>
-              <ellipse cx="80" cy="58" rx="3.5" ry="6" fill="#24151b"/>
-              <circle cx="77" cy="55" r="2" fill="#fff6d4"/>
-              <path d="M41 83q19-9 39 0l-2 15-17 5-17-6z" fill="#351920"/>
-              <path d="m44 85 4 9 5-8 5 8 5-8 5 8 6-9" fill="#fff0ce"/>
-              <path d="M36 76q10-14 24-12 14-2 25 12l-8 9-17-3-17 3z" fill="#eb986d" stroke="#54252a" stroke-width="2"/>
-              <path d="M51 68q9-4 18 0l-9 8z" fill="#321b23"/>
-            </svg>
-            <p>Para mi <strong>Princesa</strong> <span aria-hidden="true">♥</span></p>
+    <section class="monitor" aria-label="Pirate Cove security camera">
+      <div class="feed"></div>
+      <div class="camera-tag">CAM 1C<br>PIRATE COVE</div>
+      <div class="scene" id="scene">
+        <div class="box" aria-hidden="true">
+          <div class="face front"><span>FAZBEAR ENT.</span><i></i></div>
+          <div class="face back"></div>
+          <div class="face left"></div>
+          <div class="face right"></div>
+          <div class="face bottom"><span>PROPERTY OF PIRATE COVE</span></div>
+          <div class="inner inner-front"></div>
+          <div class="inner inner-back"></div>
+          <div class="inner inner-left"></div>
+          <div class="inner inner-right"></div>
+          <div class="rim">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="lining"></div>
+          <div class="note">
+            <div class="note-stack">
+              <div class="paper-edge"></div>
+              <div class="note-front">
+                <span>PARA TI</span>
+                <strong>5 razones</strong>
+                <span class="seal">♥</span>
+              </div>
+            </div>
+          </div>
+          <div class="hinge">
+            <div class="lid">
+              <div class="lid-face outside"><span class="ribbon"></span><span class="bow"></span><span class="label">PARA MI<br><strong>PRINCESA</strong></span></div>
+              <div class="lid-face inside"><span>Para mi Princesa</span></div>
+              <div class="lid-edge lid-edge-top"></div>
+              <div class="lid-edge lid-edge-bottom"></div>
+              <div class="lid-edge lid-edge-left"></div>
+              <div class="lid-edge lid-edge-right"></div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="checker" aria-hidden="true"></div>
+      <span class="signal">SIGNAL ▂ ▄ ▆</span>
+    </section>
+
+    <div class="controls">
+      <p class="hint">Drag to rotate · Tap the box to open</p>
+      <div id="message-controls" hidden>
+        <button class="message-button" id="message-button" type="button" aria-haspopup="dialog">♥ &nbsp; Leer mis 5 razones</button>
+      </div>
+      <button class="primary" id="lid-button" type="button" aria-expanded="false" aria-controls="message-controls">Open the gift</button>
     </div>
-    <p class="hint">Drag the gift to tilt it</p>
-    <footer>I’d spend all five nights with you. <span aria-hidden="true">♥</span></footer>
+
+    <footer>
+      <p>I’d spend all five nights with you. ♥</p>
+      <p class="credits">Pirate Cove screenshot via <a href="https://cliqist.com/2014/09/21/the-ultimate-five-nights-at-freddys-guide/">Cliqist</a> · Foxy film still via <a href="https://www.slashfilm.com/1438575/five-nights-at-freddys-second-weekend-box-office-drop/">/Film</a></p>
+    </footer>
   </main>
+
+  <dialog id="message" lang="es" aria-labelledby="message-title">
+    <p class="eyebrow">Un mensaje para ti ♥</p>
+    <h2 id="message-title">5 razones por las que me gustas</h2>
+    <ol class="reasons" aria-live="polite">
+      <li>Tu sonrisa me alegra el día.</li>
+      <li hidden>Me encanta cómo me haces reír.</li>
+      <li hidden>Contigo puedo ser yo.</li>
+      <li hidden>Hasta los planes más simples son especiales contigo.</li>
+      <li hidden>Cuando me pasa algo bonito, eres la primera persona a la que quiero contárselo.</li>
+    </ol>
+    <div class="carousel-controls" role="group" aria-label="Controles de las razones">
+      <button type="button" id="previous-reason" aria-label="Razón anterior">←</button>
+      <span id="reason-count">1 de 5</span>
+      <button type="button" id="next-reason" aria-label="Siguiente razón">→</button>
+    </div>
+    <p class="carousel-footer">Te quiero. ♥</p>
+    <form method="dialog"><button class="primary" autofocus>Cerrar</button></form>
+  </dialog>
 </body>
 </html>
