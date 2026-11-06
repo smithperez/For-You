@@ -6,20 +6,25 @@ const messageControls = document.querySelector('#message-controls');
 const messageButton = document.querySelector('#message-button');
 const message = document.querySelector('#message');
 const hint = document.querySelector('.hint');
+const signal = document.querySelector('#signal');
 const reasons = message.querySelector('.reasons');
 const cards = [...reasons.children];
 const reasonCount = message.querySelector('#reason-count');
+const reasonProgress = message.querySelector('.reason-progress');
+const timerFields = [...message.querySelectorAll('[data-time]')];
+const timerStart = Date.parse('2026-08-10T00:00:00+01:00');
 
 let currentReason = 0;
+let timerInterval;
 let swipeStart = null;
 
 let pitch = -31;
 let yaw = -20;
 let drag = null;
+let rotationFrame = null;
 
 function updateRotation() {
-  box.style.setProperty('--pitch', `${pitch}deg`);
-  box.style.setProperty('--yaw', `${yaw}deg`);
+  box.style.transform = `rotateX(${pitch}deg) rotateY(${yaw}deg)`;
 }
 
 function toggleLid() {
@@ -27,6 +32,7 @@ function toggleLid() {
   lidButton.setAttribute('aria-expanded', String(isOpen));
   lidButton.textContent = isOpen ? 'Close the gift' : 'Open the gift';
   messageControls.hidden = !isOpen;
+  signal.textContent = isOpen ? 'CASE OPEN ▂ ▄ ▆' : 'SIGNAL ▂ ▄ ▆';
   if (isOpen) {
     pitch = -31;
     yaw = -20;
@@ -73,13 +79,20 @@ scene.addEventListener('pointermove', (event) => {
 
   const dx = event.clientX - drag.x;
   const dy = event.clientY - drag.y;
-  if (!drag.moved && Math.hypot(dx, dy) < drag.threshold) return;
+  if (!drag.moved) {
+    if (Math.hypot(dx, dy) < drag.threshold) return;
 
-  drag.moved = true;
-  scene.classList.add('is-dragging');
+    drag.moved = true;
+    scene.classList.add('is-dragging');
+  }
   pitch = (drag.pitch - dy * 0.65) % 360;
   yaw = (drag.yaw + dx * 0.75) % 360;
-  updateRotation();
+  if (rotationFrame === null) {
+    rotationFrame = requestAnimationFrame(() => {
+      rotationFrame = null;
+      updateRotation();
+    });
+  }
 });
 
 scene.addEventListener('pointerup', (event) => {
@@ -107,16 +120,41 @@ lidButton.addEventListener('click', toggleLid);
 messageButton.addEventListener('click', openReasons);
 
 function showReason(index) {
+  reasons.style.setProperty('--card-offset', index < currentReason ? '-12px' : '12px');
   cards[currentReason].hidden = true;
   currentReason = (index + cards.length) % cards.length;
   cards[currentReason].hidden = false;
+  reasonProgress.value = currentReason + 1;
   reasonCount.textContent = `${currentReason + 1} de ${cards.length}`;
+  if (currentReason === 0) updateTimer();
+}
+
+function updateTimer() {
+  const elapsed = Math.max(0, Math.floor((Date.now() - timerStart) / 1000));
+  const values = {
+    days: Math.floor(elapsed / 86400),
+    hours: Math.floor(elapsed / 3600) % 24,
+    minutes: Math.floor(elapsed / 60) % 60,
+    seconds: elapsed % 60,
+  };
+
+  for (const field of timerFields) {
+    field.textContent = String(values[field.dataset.time]).padStart(2, '0');
+  }
 }
 
 function openReasons() {
   showReason(0);
   message.showModal();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (currentReason === 0) updateTimer();
+  }, 1000);
 }
+
+message.addEventListener('close', () => {
+  clearInterval(timerInterval);
+});
 
 message.querySelector('#previous-reason').addEventListener('click', () => showReason(currentReason - 1));
 message.querySelector('#next-reason').addEventListener('click', () => showReason(currentReason + 1));

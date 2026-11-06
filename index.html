@@ -18,11 +18,27 @@
     </section>
 
     <section class="monitor" aria-label="Pirate Cove security camera">
-      <div class="feed"></div>
+      <div class="feed" aria-hidden="true"></div>
+      <div class="camera-sweep" aria-hidden="true"></div>
+      <div class="viewfinder" aria-hidden="true"></div>
       <div class="camera-tag">CAM 1C<br>PIRATE COVE</div>
       <div class="scene" id="scene">
         <div class="box" aria-hidden="true">
-          <div class="face front"><span>FAZBEAR ENT.</span><i></i></div>
+          <div class="face front">
+            <span>FAZBEAR ENT.</span>
+            <div class="hasp"></div>
+            <div class="padlock">
+              <div class="shackle"><i></i><i></i><i></i><i></i></div>
+              <div class="lock-body">
+                <i class="lock-plate lock-front"></i>
+                <i class="lock-plate lock-back"></i>
+                <i class="lock-plate lock-left"></i>
+                <i class="lock-plate lock-right"></i>
+                <i class="lock-plate lock-top"></i>
+                <i class="lock-plate lock-bottom"></i>
+              </div>
+            </div>
+          </div>
           <div class="face back"></div>
           <div class="face left"></div>
           <div class="face right"></div>
@@ -57,7 +73,7 @@
           </div>
         </div>
       </div>
-      <span class="signal">SIGNAL ▂ ▄ ▆</span>
+      <span class="signal" id="signal">SIGNAL ▂ ▄ ▆</span>
     </section>
 
     <div class="controls">
@@ -78,17 +94,28 @@
     <p class="eyebrow">Un mensaje para ti ♥</p>
     <h2 id="message-title">5 razones por las que me gustas</h2>
     <ol class="reasons" aria-live="polite">
-      <li>Tu sonrisa me alegra el día.</li>
+      <li class="timer-card">
+        <p class="timer-date">Desde el <time datetime="2026-08-10">10 de agosto de 2026</time></p>
+        <div class="timer" role="timer" aria-label="Tiempo desde el 10 de agosto de 2026" aria-live="off">
+          <span><strong data-time="days">00</strong><small lang="en">Days</small></span>
+          <span><strong data-time="hours">00</strong><small lang="en">Hours</small></span>
+          <span><strong data-time="minutes">00</strong><small lang="en">Minutes</small></span>
+          <span><strong data-time="seconds">00</strong><small lang="en">Seconds</small></span>
+        </div>
+        <p class="timer-caption">Este reloj cuenta el tiempo desde que empezó lo nuestro. Y aun así, mi momento favorito sigue siendo el próximo segundo contigo.</p>
+      </li>
+      <li hidden>Tu sonrisa me alegra el día.</li>
       <li hidden>Me encanta cómo me haces reír.</li>
       <li hidden>Contigo puedo ser yo.</li>
       <li hidden>Hasta los planes más simples son especiales contigo.</li>
       <li hidden>Cuando me pasa algo bonito, eres la primera persona a la que quiero contárselo.</li>
     </ol>
     <div class="carousel-controls" role="group" aria-label="Controles de las razones">
-      <button type="button" id="previous-reason" aria-label="Razón anterior">←</button>
-      <span id="reason-count">1 de 5</span>
-      <button type="button" id="next-reason" aria-label="Siguiente razón">→</button>
+      <button type="button" id="previous-reason" aria-label="Tarjeta anterior">←</button>
+      <span id="reason-count">1 de 6</span>
+      <button type="button" id="next-reason" aria-label="Siguiente tarjeta">→</button>
     </div>
+    <progress class="reason-progress" value="1" max="6" aria-hidden="true"></progress>
     <p class="carousel-footer">Te quiero. ♥</p>
     <form method="dialog"><button class="primary" autofocus>Cerrar</button></form>
   </dialog>

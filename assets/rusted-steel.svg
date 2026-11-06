@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="288" height="192" viewBox="0 0 288 192">
+  <defs>
+    <filter id="corrosion" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".025 .035" numOctaves="4" seed="18" stitchTiles="stitch" result="patches"/>
+      <feColorMatrix in="patches" type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4.8 0 0 0 -2.05" result="rust-mask"/>
+      <feFlood flood-color="#a94e28" result="oxide"/>
+      <feComposite in="oxide" in2="rust-mask" operator="in" result="rust"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".62 .75" numOctaves="2" seed="27" stitchTiles="stitch" result="pits"/>
+      <feColorMatrix in="pits" type="matrix"
+        values="0 0 0 0 .08 0 0 0 0 .07 0 0 0 0 .075 2.3 0 0 0 -.9" result="pitting"/>
+      <feComposite in="pitting" in2="rust" operator="over"/>
+    </filter>
+  </defs>
+  <path d="M0 0h288v192H0z" filter="url(#corrosion)"/>
+</svg>
