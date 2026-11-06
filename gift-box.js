@@ -1,8 +1,6 @@
 const scene = document.querySelector('#scene');
 const monitor = scene.closest('.monitor');
-const viewfinder = monitor.querySelector('.viewfinder');
 const cameraReset = monitor.querySelector('#camera-reset');
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const box = scene.querySelector('.box');
 const note = box.querySelector('.note-front');
 const message = document.querySelector('#message');
@@ -57,6 +55,7 @@ let pitch = initialPitch;
 let yaw = initialYaw;
 let drag = null;
 let rotationFrame = null;
+let cameraFeedbackTimeout;
 
 function updateRotation() {
   box.style.transform = `rotateX(${pitch}deg) rotateY(${yaw}deg)`;
@@ -74,18 +73,18 @@ function resetRotation() {
 }
 
 cameraReset.addEventListener('click', () => {
-  if (drag) return;
+  const previousDrag = finishDrag();
+  if (previousDrag && scene.hasPointerCapture(previousDrag.id)) {
+    scene.releasePointerCapture(previousDrag.id);
+  }
 
   resetRotation();
-  if (!reducedMotion.matches) monitor.classList.add('is-reacquiring');
-});
-
-viewfinder.addEventListener('animationend', (event) => {
-  if (event.animationName === 'camera-reacquire') monitor.classList.remove('is-reacquiring');
+  clearTimeout(cameraFeedbackTimeout);
+  monitor.classList.add('is-reacquiring');
+  cameraFeedbackTimeout = setTimeout(() => monitor.classList.remove('is-reacquiring'), 500);
 });
 
 function toggleLid() {
-  monitor.classList.remove('is-reacquiring');
   const isOpen = scene.classList.toggle('is-open');
   scene.setAttribute('aria-expanded', String(isOpen));
   scene.setAttribute('aria-label', isOpen ? 'Leer la nota dentro de la caja' : 'Abrir la caja del regalo');
@@ -159,26 +158,31 @@ scene.addEventListener('pointermove', (event) => {
 scene.addEventListener('pointerup', (event) => {
   if (drag?.id !== event.pointerId) return;
 
-  const distance = Math.hypot(event.clientX - drag.x, event.clientY - drag.y);
-  if (drag.moved || distance >= drag.threshold) return;
+  const gesture = finishDrag();
+  const distance = Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y);
+  if (gesture.moved || distance >= gesture.threshold) return;
 
-  if (drag.onNoteArea && scene.classList.contains('is-open')) {
+  if (gesture.onNoteArea && scene.classList.contains('is-open')) {
     scene.focus({ preventScroll: true });
     openReasons();
-  } else if (drag.onBox) {
+  } else if (gesture.onBox) {
     toggleLid();
   }
 });
 
-function clearDrag(event) {
-  if (drag?.id !== event.pointerId) return;
-
+function finishDrag() {
+  const gesture = drag;
   drag = null;
-  scene.classList.remove('is-dragging');
+  if (gesture?.moved) scene.classList.remove('is-dragging');
+  return gesture;
 }
 
-scene.addEventListener('lostpointercapture', clearDrag);
-scene.addEventListener('pointercancel', clearDrag);
+function cancelDrag(event) {
+  if (drag?.id === event.pointerId) finishDrag();
+}
+
+scene.addEventListener('lostpointercapture', cancelDrag);
+scene.addEventListener('pointercancel', cancelDrag);
 
 function activateGift() {
   if (scene.classList.contains('is-open')) openReasons();
